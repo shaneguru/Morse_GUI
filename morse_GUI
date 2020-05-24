@@ -1,0 +1,78 @@
+#Morse code translator
+from tkinter import *
+import tkinter.font
+from gpiozero import LED
+import RPi.GPIO
+import time 
+
+RPi.GPIO.setmode(RPi.GPIO.BOARD)
+
+rled=LED(21)
+
+morseDict = {   'A':'.-', 'B':'-...', 
+                'C':'-.-.', 'D':'-..', 'E':'.', 
+                'F':'..-.', 'G':'--.', 'H':'....', 
+                'I':'..', 'J':'.---', 'K':'-.-', 
+                'L':'.-..', 'M':'--', 'N':'-.', 
+                'O':'---', 'P':'.--.', 'Q':'--.-', 
+                'R':'.-.', 'S':'...', 'T':'-', 
+                'U':'..-', 'V':'...-', 'W':'.--', 
+                'X':'-..-', 'Y':'-.--', 'Z':'--..', 
+                '1':'.----', '2':'..---', '3':'...--', 
+                '4':'....-', '5':'.....', '6':'-....',
+                '7':'--...', '8':'---..', '9':'----.',
+                '0':'-----', ', ':'--..--', '.':'.-.-.-',
+                '?':'..--..', '/':'-..-.', '-':'-....-',
+                '(':'-.--.', ')':'-.--.-'}
+
+
+win = Tk()
+win.title("Morse Code Translator")
+myFont = tkinter.font.Font(family = 'Helvetica', size = 12, weight = "bold")
+
+
+def morse_line():
+        rled.on()
+        time.sleep(1)
+        rled.off()
+        time.sleep(0.4)
+
+def morse_dot():
+        rled.on()
+        time.sleep(0.3)
+        rled.off()
+        time.sleep(0.4)
+def translator():
+        word = input.get()
+        if len(word)<12:
+                for i in range(len(word)):
+                        for character in morseDict[word[i].upper()]:
+                                if (character=='.'):
+                                        morse_dot()
+                                elif(character=='-'):
+                                        morse_line()
+                                elif(character==' '):
+                                        time.sleep(0.5)
+                                else:
+                                        Writeline('Invalid character found, please check again')
+                        time.sleep(0.7)
+        else:
+                Label(win, text = 'Entry should be less than 12 characters').grid(row=3,column=1)
+
+def close():
+    RPi.GPIO.cleanup()
+    win.destroy()
+
+
+input = Entry(win, font=myFont, width=35)
+input.grid(row=1,column=1)
+
+ledButton = Button(win,font=myFont, text='Translate', command=translator,  height=1, width=24)
+ledButton.grid(row=2,column=1)
+
+exitButton = Button(win, font=myFont, text='Exit', command=close, bg='red', height=1, width=6)
+exitButton.grid(row=4, column=1)
+
+win.protocol("WM_DELETE_WINDOW", close)
+
+win.mainloop() 
